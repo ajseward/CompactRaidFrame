@@ -194,7 +194,20 @@ local UNIT_CAN_APPLY_AURAS = {
 lib.UNIT_CAN_APPLY_AURAS = UNIT_CAN_APPLY_AURAS;
 
 local function SetNewCompanion(spellID)
-    UNIT_CAN_APPLY_AURAS[PLAYER_CLASS][spellID] = { canApplyAura = true,  appliesOnlyYourself = true };
+    local name = GetSpellInfo(spellID)
+    if not name and C_Cache and C_Cache.QuerySpell then
+        C_Cache:QuerySpell(spellID, false, function(sid)
+            local name = GetSpellInfo(sid)
+            if name then
+                UNIT_CAN_APPLY_AURAS[PLAYER_CLASS][name] = { canApplyAura = true,  appliesOnlyYourself = true };
+            end
+        end)
+        return
+    end
+    
+    if name then
+        UNIT_CAN_APPLY_AURAS[PLAYER_CLASS][name] = { canApplyAura = true,  appliesOnlyYourself = true };
+    end
 end
 
 local function Companion_Inizialization()
@@ -205,6 +218,21 @@ local function Companion_Inizialization()
 end
 
 function lib.handler:PLAYER_LOGIN()
+    for class, auras in pairs(UNIT_CAN_APPLY_AURAS) do
+        for spellID, auraInfo in pairs(auras) do
+            local name = GetSpellInfo(spellID)
+            if not name and C_Cache and C_Cache.querySpell then
+                C_Cache:QuerySpell(spellID, false, function(sid)
+                    local name = GetSpellInfo(sid)
+                    if name then
+                        UNIT_CAN_APPLY_AURAS[class][name] = tcopy(auraInfo)
+                    end
+                end)
+            elseif name then
+                UNIT_CAN_APPLY_AURAS[class][name] = tcopy(auraInfo)
+            end
+        end
+    end
     Companion_Inizialization();
 end
 

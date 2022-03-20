@@ -522,7 +522,8 @@ function CUFSpellIsPriorityAura(spellId)
         return false;
     end
 
-    return LOSS_OF_CONTROL_STORAGE[spellId] and true;
+    local name = GetSpellInfo(spellId)
+    return LOSS_OF_CONTROL_STORAGE[name] and true;
 end
 
 function CUFSpellIsSelfBuff(spellId)

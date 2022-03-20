@@ -59,15 +59,15 @@ local function ResetUnitAuras(unitID)
     lib:RemoveAllAurasFromGUID(UnitGUID(unitID));
 end
 
-local function GetAuraPriority(spellId)
-    if ( UNIT_CAN_APPLY_AURAS[spellId] ) then
-        if ( UNIT_CAN_APPLY_AURAS[spellId].appliesOnlyYourself ) then
+local function GetAuraPriority(name)
+    if ( UNIT_CAN_APPLY_AURAS[name] ) then
+        if ( UNIT_CAN_APPLY_AURAS[name].appliesOnlyYourself ) then
             return 1;
         else
             return UnitAffectingCombat("player") and 1 or 2;
         end
-    elseif ( LOSS_OF_CONTROL_STORAGE[spellId] ) then
-        return LOSS_OF_CONTROL_STORAGE[spellId][2];
+    elseif ( LOSS_OF_CONTROL_STORAGE[name] ) then
+        return LOSS_OF_CONTROL_STORAGE[name][2];
     else
         return 0;
     end
@@ -88,7 +88,7 @@ function lib:AddAuraFromUnitID(index, filterType, dstGUID, ...)
     tinsert(tracker, #tracker + 1, {
         index = index,
         filterType = filterType,
-        priorityIndex = GetAuraPriority(spellID),
+        priorityIndex = GetAuraPriority(spellName),
         name = spellName,
         texture = texture,
         stackCount = stackCount,
@@ -128,7 +128,7 @@ end
                                 canStealOrPurge,
                                 shouldConsolidate,
                                 spellID,
-                                ( UNIT_CAN_APPLY_AURAS[spellID] and UNIT_CAN_APPLY_AURAS[spellID].canApplyAura )
+                                ( UNIT_CAN_APPLY_AURAS[name] and UNIT_CAN_APPLY_AURAS[name].canApplyAura )
                             );
         index = index + 1;
     end
@@ -268,5 +268,8 @@ function lib:SpellIsSelfBuff(spellID)
     spellID = tonumber(spellID);
     assert(type(spellID)=="number", "spellID is not number value");
 
-    return UNIT_CAN_APPLY_AURAS[spellID];
+    local name = GetSpellInfo(spellID)
+    if name then
+        return UNIT_CAN_APPLY_AURAS[name];
+    end
 end

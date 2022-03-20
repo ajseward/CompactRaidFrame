@@ -216,3 +216,18 @@ List[56632] = { LOSS_OF_CONTROL_DISPLAY_ROOT, 4 }; -- Tangled Webs
 List[49704] = { LOSS_OF_CONTROL_DISPLAY_ROOT, 4 }; -- Encasing Webs
 List[61579] = { LOSS_OF_CONTROL_DISPLAY_ROOT, 4 }; -- Runic Focus
 List[71647] = { LOSS_OF_CONTROL_DISPLAY_ROOT, 4 }; -- Ice Trap
+
+
+for sid, displayInfo in pairs(List) do
+    local name = GetSpellInfo(sid)
+    if name then
+        List[name] = tcopy(displayInfo)
+    elseif C_Cache and C_Cache.QuerySpell then
+        C_Cache:QuerySpell(sid, false, function(spellId)
+            local name = GetSpellInfo(spellId)
+            if name then
+                List[name] = tcopy(displayInfo)
+            end
+        end)
+    end
+end
