@@ -207,6 +207,8 @@ end
 function CompactUnitFrame_SetUpFrame(frame, func)
     func(frame);
     CompactUnitFrame_UpdateAll(frame);
+    ClickCastFrames = ClickCastFrames or {}
+    ClickCastFrames[frame] = true
 end
 
 function CompactUnitFrame_SetOptionTable(frame, optionTable)
